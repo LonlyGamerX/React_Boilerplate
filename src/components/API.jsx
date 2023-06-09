@@ -3,56 +3,32 @@ import axios from "axios";
 const port = 5333;
 const urlendpoint = "http://localhost:" + port;
 const aboutEP = "/about";
-const loginEP = "/login/login"; // EP = Endpoint
+const loginEP = "/login/login";
 const userEP = "/user/admin";
 
-makeRequest = async (endpoint) => {
+// Generic function to handle API requests
+const makeRequest = async (endpoint, method = "get", data = null) => {
   try {
-    const response = await axios.get(urlendpoint + endpoint);
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    };
+
+    const response = await axios[method](urlendpoint + endpoint, data, config);
     return response.data;
   } catch (error) {
-    console.log("Error >>> ", error);
-    return null;
+    return error.response;
   }
-};
-
-export const GetAbout = async () => {
-  return await makeRequest(aboutEP);
 };
 
 export const Login = async (email, password) => {
-  try {
-    const response = await axios.post(
-      urlendpoint + loginEP,
-      JSON.stringify({ email, password }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-    return response;
-  } catch (error) {
-    return error.response;
-  }<Container className="bg-danger">
-</Container>
+  const requestData = { email, password };
+  return await makeRequest(loginEP, "post", JSON.stringify(requestData));
 };
 
 export const UserCreation = async (email, password, name, admin) => {
-  try {
-    const response = await axios.post(
-      urlendpoint + userEP,
-      JSON.stringify({ email, password, name, admin }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true,
-      }
-    );
-    return response;
-  } catch (error) {
-    return error.response;
-  }
+  const requestData = { email, password, name, admin };
+  return await makeRequest(userEP, "post", JSON.stringify(requestData));
 };
